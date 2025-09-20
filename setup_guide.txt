@@ -1,0 +1,276 @@
+# Auto Lead Generation SMART BDM CRM - Setup Guide
+
+## Prerequisites
+
+Before setting up the application, ensure you have:
+- Node.js (version 16 or higher)
+- npm or yarn package manager
+- A Supabase account (free tier is sufficient)
+
+## 1. Supabase Setup
+
+### Step 1: Create a Supabase Project
+1. Go to https://supabase.com
+2. Click "Start your project" or "New Project"
+3. Sign up/Login with GitHub, Google, or email
+4. Create a new organization if you don't have one
+5. Click "New Project"
+6. Fill in project details:
+   - Project Name: "Smart CRM"
+   - Database Password: Create a strong password (save this!)
+   - Region: Choose closest to your location
+7. Click "Create new project"
+8. Wait 2-3 minutes for project setup to complete
+
+### Step 2: Get Project Credentials
+1. In your Supabase project dashboard, go to Settings > API
+2. Copy the following values:
+   - Project URL (starts with https://...)
+   - anon/public key (starts with eyJ...)
+   - service_role key (starts with eyJ... - keep this secure!)
+
+### Step 3: Configure Authentication
+1. Go to Authentication > Settings in Supabase dashboard
+2. Under "Auth Providers", ensure Email is enabled
+3. Disable "Enable email confirmations" for easier setup
+4. Set Site URL to: http://localhost:5173 (for development)
+5. Save the configuration
+
+### Step 4: Set up Database Schema
+The application will automatically create the database schema when you connect to Supabase using the provided migration file.
+
+## 2. External API Keys Setup (Optional - For Production)
+
+### DuckDuckGo Instant Answer API (Free)
+- No API key required
+- Rate limited to 1000 requests/day
+- Used for basic company searches
+
+### OpenCorporates API (Free Tier)
+1. Go to https://opencorporates.com/api_accounts/new
+2. Sign up for a free account
+3. Verify your email
+4. Go to Account > API Token
+5. Copy your API token
+6. Free tier: 500 calls/month
+
+### Google Maps Places API (Free $200/month credit)
+1. Go to https://console.cloud.google.com/
+2. Create a new project or select existing
+3. Enable the Places API:
+   - Go to APIs & Services > Library
+   - Search for "Places API"
+   - Click on it and press "Enable"
+4. Create credentials:
+   - Go to APIs & Services > Credentials
+   - Click "Create Credentials" > "API Key"
+   - Copy the API key
+5. Restrict the key (recommended):
+   - Click on the API key
+   - Under "Application restrictions", select "HTTP referrers"
+   - Add: http://localhost:5173/* and your production domain
+   - Under "API restrictions", select "Restrict key"
+   - Choose "Places API"
+   - Save
+
+### Hunter.io Email Finder API (Free Tier)
+1. Go to https://hunter.io/api
+2. Sign up for a free account
+3. Verify your email
+4. Go to Dashboard > API
+5. Copy your API key
+6. Free tier: 25 requests/month
+
+### Clearbit Company API (Free Tier)
+1. Go to https://clearbit.com/
+2. Sign up for free account
+3. Go to Dashboard > API Keys
+4. Copy your secret API key
+5. Free tier: 50 requests/month
+
+## 3. Application Setup
+
+### Step 1: Environment Configuration
+1. In the project root, create a `.env` file:
+
+```bash
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional: External API Keys (for production lead generation)
+VITE_OPENCORPORATES_API_KEY=your_opencorporates_api_key
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+VITE_HUNTER_API_KEY=your_hunter_api_key
+VITE_CLEARBIT_API_KEY=your_clearbit_api_key
+```
+
+### Step 2: Install Dependencies
+```bash
+npm install
+```
+
+### Step 3: Connect to Supabase
+1. Click the "Connect to Supabase" button in the top right of the application
+2. Enter your Supabase credentials when prompted
+3. The database schema will be automatically created
+
+### Step 4: Start Development Server
+```bash
+npm run dev
+```
+
+The application will be available at http://localhost:5173
+
+## 4. Initial Setup
+
+### Step 1: Create Admin Account
+1. Open the application in your browser
+2. Click "Need an account? Sign up"
+3. Fill in the registration form:
+   - Full Name: Your name
+   - Email: Your email
+   - Password: Strong password
+   - Role: Select "Admin"
+4. Click "Create Account"
+
+### Step 2: Add Sample Data
+1. Login with your admin account
+2. Go to "Products & Services"
+3. Add your first product:
+   - Name: "ERP Software"
+   - Description: "Enterprise Resource Planning Solutions"
+   - Keywords: ERP, Enterprise Software, Business Management, Accounting Software
+4. The system comes pre-loaded with Indian regions (Mumbai, Bangalore, Delhi, etc.)
+
+### Step 3: Create Your First Campaign
+1. Go to "Campaigns"
+2. Click "New Campaign"
+3. Fill in campaign details:
+   - Name: "Mumbai ERP Leads Q1"
+   - Product: Select "ERP Software"
+   - Region: Select "Mumbai"
+   - Schedule: Set to current time or future
+4. Click "Create Campaign"
+5. Click the play button to generate sample leads
+
+## 5. User Management
+
+### Creating Additional Users
+1. As admin, go to "User Management"
+2. Click "Add User" (or have users register themselves)
+3. Available roles:
+   - **Admin**: Full access to all features
+   - **Sales Coordinator**: Can manage campaigns and leads
+   - **Reviewer**: Can review and approve leads
+   - **BDM**: Can view and work with final leads
+
+### Role Permissions
+- **Admin**: All features, user management, system settings
+- **Sales Coordinator**: Campaigns, auto leads, final leads
+- **Reviewer**: Auto leads review, final leads
+- **BDM**: Final leads, dashboard (limited)
+
+## 6. Production Deployment
+
+### Environment Variables for Production
+Update your `.env` file with production values:
+
+```bash
+# Production Supabase
+VITE_SUPABASE_URL=your_production_supabase_url
+VITE_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+
+# Production API Keys
+VITE_OPENCORPORATES_API_KEY=your_api_key
+VITE_GOOGLE_MAPS_API_KEY=your_api_key
+VITE_HUNTER_API_KEY=your_api_key
+VITE_CLEARBIT_API_KEY=your_api_key
+```
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Deployment Options
+1. **Netlify**: Connect your GitHub repo, auto-deploy on push
+2. **Vercel**: Similar to Netlify, great for React apps
+3. **VPS/Cloud**: Upload dist/ folder to web server
+
+## 7. Troubleshooting
+
+### Common Issues
+
+**1. Supabase Connection Error**
+- Check if URL and API key are correct
+- Ensure no extra spaces in .env file
+- Verify Supabase project is active
+
+**2. Authentication Issues**
+- Check if email confirmations are disabled in Supabase
+- Verify Site URL is set correctly
+- Clear browser cache and try again
+
+**3. Database Schema Issues**
+- Check if RLS (Row Level Security) policies are enabled
+- Verify user has proper role assigned
+- Check browser console for detailed error messages
+
+**4. API Rate Limits**
+- DuckDuckGo: Max 1000/day
+- OpenCorporates: Max 500/month (free)
+- Google Maps: $200 credit/month
+- Hunter.io: Max 25/month (free)
+
+**5. Lead Generation Not Working**
+- This is expected in demo mode - leads are mock generated
+- In production, integrate real APIs for actual lead generation
+- Check API keys and rate limits
+
+### Getting Help
+- Check browser console for error messages
+- Review Supabase logs in dashboard
+- Ensure all environment variables are set correctly
+- Verify API keys have proper permissions
+
+## 8. Feature Overview
+
+### Core Features Available
+- ✅ User Management & RBAC
+- ✅ Products/Services Management
+- ✅ Campaign Creation & Management  
+- ✅ Mock Lead Generation (demo)
+- ✅ Lead Review & Approval Workflow
+- ✅ Final Leads Management
+- ✅ Activity Logging & Audit Trail
+- ✅ CSV Export Functionality
+- ✅ Internal Notes & Communication
+- ✅ Lead Tagging & Categorization
+- ✅ Dashboard & Analytics
+- ✅ Responsive Design
+
+### Next Steps for Production
+1. Integrate real lead generation APIs
+2. Add email automation for outreach
+3. Implement advanced lead scoring
+4. Add CRM integrations (HubSpot, Salesforce)
+5. Mobile app development
+6. Advanced analytics and reporting
+
+## 9. Maintenance
+
+### Regular Tasks
+- Monitor API usage and costs
+- Review and clean up old leads
+- Update user permissions as needed
+- Backup Supabase database regularly
+- Monitor system performance and logs
+
+### Updates
+- Keep dependencies updated: `npm audit fix`
+- Monitor Supabase dashboard for any issues
+- Update API keys before expiration
+- Review and optimize database queries
+
+This completes the setup guide. You now have a fully functional Auto Lead Generation SMART BDM CRM system!
